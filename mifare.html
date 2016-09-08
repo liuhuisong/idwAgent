@@ -1,0 +1,49 @@
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Mifare Test</title>
+<script src="jquery/jquery-1.12.1.js"></script>
+<script type="text/javascript">
+	function icw() {
+
+		var utype = $("#user-type").val();
+		var uid = $("#user-id").val();
+
+		if ((utype =="") || uid=="") {
+			$("#binfo").html("数据填写错误");
+			return;
+		}
+
+		$("#binfo").html("正在写...");
+
+		$.get("http://127.0.0.1:4050", {
+			action : "write",
+			utype : utype,
+			uid : uid
+		}, function(result,r,x) {
+
+			if (result == "FAILED") {
+				$("#binfo").html("写卡失败");
+			} else {
+				$("#binfo").html("写卡成功，卡ID=" + result);
+			}
+		});
+	}
+</script>
+</head>
+<body>
+
+	<label>用户类型(2,3):<br />
+	<input type="text" id="user-type" value="2"/></label>
+	<br />
+	<br />
+	<label>用户ID:<br />
+	<input type="text" id="user-id" value="3"/></label>
+	<br />
+	<br />
+	<span id="binfo"></span>
+	<br />
+	<br />
+	<input type="submit" value="写卡" onclick="icw()" />
+</body>
+</html>
