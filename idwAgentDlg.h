@@ -42,18 +42,25 @@ protected:
 public:
 	afx_msg void OnBnClickedOk();
 
+	/*0=ok,1 param error,3 device error or card not found,4 auth,5 write error
+	*/
+	int onRecvReq(char*p,unsigned long*tagid);
+
 protected:
 #define TID	1
 
 	void hideToTaskIcon();
-	bool isDevReady();
+	bool detectMifareDev();
+	void log(LPCTSTR fmt,...);
+
 public:
 	// //log list control
 	CListBox m_log;
 	BOOL m_scroll;
+
 	MifareUser m_mifare;
 	HttpServer m_server;
-	bool m_bServer;
 
 	afx_msg void OnBnClickedMifareBeep();
+	afx_msg void OnBnClickedReadMifare();
 };

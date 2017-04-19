@@ -22,7 +22,14 @@ public:
 	bool Initialize();
 	bool Uninitialize();
 
-	int WriteUserData(int user_type, int id);
+	int WriteUserData(int user_type, int id,int block=-1,int acChange=-1);
+	int ReadUserData(int block, TCHAR*p, int len, long*uid);
+	
+	PTSTR perror(int error);
+
+	bool isFormatMode() {
+		return FORMAT_MIFARE?true:false;
+	}
 
 public:
 	bool FindCard();

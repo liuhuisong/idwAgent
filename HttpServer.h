@@ -12,11 +12,9 @@ public:
 	virtual ~HttpServer();
 	virtual void OnAccept(int nErrorCode);
 
-	BOOL Create(CListBox*p,MifareUser*pu);
+	BOOL init(int port=SERVER_PORT);
 
 protected:
-	CListBox*m_pLog;
-	MifareUser*m_mifare;
 };
 
 

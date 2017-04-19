@@ -6,17 +6,13 @@
 class HttpConnected : public CSocket
 {
 public:
-	HttpConnected(CListBox*p,MifareUser*pu);
+	HttpConnected();
 	virtual ~HttpConnected();
 	virtual void OnClose(int nErrorCode);
 	virtual void OnReceive(int nErrorCode);
 
 protected:
-	CListBox* m_pLog;
-	MifareUser*m_mifare;
-
-protected:
-	void httpRespon(const char*s);
+	void httpRespon(const char*s,const char*ori);
 };
 
 

@@ -8,7 +8,7 @@
 
 // HttpServer
 
-HttpServer::HttpServer() :m_pLog(NULL)
+HttpServer::HttpServer()
 {
 }
 
@@ -19,7 +19,7 @@ HttpServer::~HttpServer()
 
 void HttpServer::OnAccept(int nErrorCode)
 {
-	HttpConnected* conn = new HttpConnected(m_pLog,m_mifare);
+	HttpConnected* conn = new HttpConnected();
 	
 	if (Accept(*conn)){
 		TRACE0("accepted");
@@ -32,15 +32,12 @@ void HttpServer::OnAccept(int nErrorCode)
 	//CSocket::OnAccept(nErrorCode);
 }
 
-BOOL HttpServer::Create(CListBox*p,MifareUser*pu)
+BOOL HttpServer::init(int port)
 {
-	BOOL b = CSocket::Create(SERVER_PORT);
+	BOOL b = CSocket::Create(port);
 	if (!b){
 		return FALSE;
-	}
-
-	m_pLog = p;
-	m_mifare = pu;
+	}	
 
 	return TRUE;
 }

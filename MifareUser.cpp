@@ -220,7 +220,34 @@ int MifareUser::getLastPiccError()
 	return m_picc_error;
 }
 
-int MifareUser::WriteUserData(int user_type, int id)
+/*
+info: 2=load dll error,3=can't find card,4=auth error,5=write data error,6=change ac byte error
+*/
+PTSTR MifareUser::perror(int error) {
+	if (error == 2) {
+		return _T("load dll error");
+	}
+	
+	if (error == 3) {
+		return _T("no device, or no card found");
+	}
+	
+	if (error == 4) {
+		return _T("auth error");
+	}
+	
+	if (error == 5) {
+		return _T("write data error");
+	}
+	
+	if (error == 6) {
+		return _T("change ac byte error");
+	}
+
+	return _T("na");
+}
+
+int MifareUser::WriteUserData(int user_type, int id,int nBlock,int acChange)
 {
 	/*
 	if (user_type != USER_MAINT && user_type != USER_SAFER){
@@ -235,31 +262,80 @@ int MifareUser::WriteUserData(int user_type, int id)
 		return 3;
 	}
 
+	int section = SECTION;
+	int block = BLOCK;
+	int format_mifare = FORMAT_MIFARE;
+
+	if (nBlock >= 0 && nBlock<=63) {
+		section = (nBlock / 4) % 16;
+		block = nBlock % 4;
+	}
+	if (acChange != -1) {
+		format_mifare = acChange;
+	}
+
 	Mifare::Key key = Mifare::getDefaultKey();
-	if (!AuthA(key, SECTION)){
+	if (!AuthA(key, section)){
 		return 4;
 	}
 
-	byte b0 = user_type;
+	byte b0 = (byte)user_type;
 	Mifare::data_block db(b0, id);
-	if (!WriteData(&db, SECTION, BLOCK)){
+	if (!WriteData(&db, section, block)){
 		return 5;
 	}
 
-	if (FORMAT_MIFARE){
-		Mifare::Key keya = m_serial.getLongWanKeyA(SECTION);
-		Mifare::Key Keyb = m_serial.getLongWanKeyB(SECTION);
+	if (format_mifare){
+		Mifare::Key keya = m_serial.getLongWanKeyA(section);
+		Mifare::Key Keyb = m_serial.getLongWanKeyB(section);
 		Mifare::Ac ac = Mifare::getLongWanAC();
 
 		Mifare::data_block db3(keya, ac, Keyb);
-		if (!WriteData(&db3, SECTION, 3)){
+		if (!WriteData(&db3, section, 3)){
 			TRACE0("changed passwod failed\n");
-			return 9;
+			return 6;
 		}
 	}
 
-	Beep(200);
+	Beep(100);
 	Halt();
+
+	return 0;
+}
+
+int MifareUser::ReadUserData(int block, TCHAR*p, int len, long*uid) {
+	if (m_hDllLibrary == NULL) {
+		return 2;
+	}
+
+	if (!FindCard()) {
+		return 3;
+	}
+
+	if (block < 0 || block>63) {
+		return 4;
+	}
+
+	int section = block/4;
+	block = block % 4;
+
+	Mifare::Key key = Mifare::getDefaultKey();
+	if (!AuthA(key, section)) {
+		return 4;
+	}
+
+	Mifare::data_block data;
+	if (!ReadData(&data, section, block)) {
+		return 6;
+	}
+	
+	if (uid) {
+		*uid =  getSerialUL();
+	}
+
+	if (p && len > 8) {
+		data.HexString(p, len);
+	}
 
 	return 0;
 }
