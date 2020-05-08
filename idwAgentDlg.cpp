@@ -267,12 +267,6 @@ int CidwAgentDlg::onRecvReq(char * buf, unsigned long*tagid)
 			continue;
 		}
 
-		tag = "uid=";
-		if (str3.substr(0, strlen(tag)) == tag) {
-			uid = atoi(str3.c_str() + strlen(tag));
-			continue;
-		}
-
 		tag = "block=";
 		if (str3.substr(0, strlen(tag)) == tag) {
 			block = atoi(str3.c_str() + strlen(tag));
@@ -284,6 +278,7 @@ int CidwAgentDlg::onRecvReq(char * buf, unsigned long*tagid)
 			close = atoi(str3.c_str() + strlen(tag));
 			continue;
 		}
+
 	}
 
 	if (utype == -1) {
@@ -296,12 +291,22 @@ int CidwAgentDlg::onRecvReq(char * buf, unsigned long*tagid)
 		return 1;
 	}
 
+	if (block == -1) {
+	
+		if (m_mifare.FindCard()) {
+			*tagid = m_mifare.getSerialUL();			
+			log(_T("成功读卡: <%08X>"), *tagid);
+			return 0;
+		}
+		log(_T("没有找到卡"));
+		return 1;
+	}
 
 	int n = m_mifare.WriteUserData(utype, uid, block, close);
 	if (n == 0) {
 		*tagid = m_mifare.getSerialUL();
 
-		log(_T("成功写卡: %08X"), tagid);
+		log(_T("成功写卡: <%08X>"), *tagid);
 		return 0;
 	}
 	
@@ -385,7 +390,8 @@ void CidwAgentDlg::OnBnClickedReadMifare()
 
 	int n = m_mifare.ReadUserData(block, buf, 32, &uid);
 	if ( n== 0) {
-		log(_T("read %04X, %s"), uid, buf);
+		log(_T("read <%08X>, %s"), uid, buf);
+
 		m_mifare.Beep(200);
 	}
 	else {

@@ -22,7 +22,7 @@
     <ProjectGuid>{08B0B386-BCED-427A-867F-40F3FD1D3BD4}</ProjectGuid>
     <RootNamespace>idwAgent</RootNamespace>
     <Keyword>MFCProj</Keyword>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.15063.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -178,7 +178,7 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
+    <Text Include="Readme.md" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="HttpConnected.h" />

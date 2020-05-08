@@ -1,3 +1,4 @@
+//liuhuisong@hotmail.com
 #include "stdafx.h"
 #include "Mifare.h"
 
